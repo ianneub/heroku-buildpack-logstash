@@ -8,7 +8,11 @@ module LogstashPack
   LOGSTASH_URL = "https://download.elasticsearch.org/logstash/logstash/logstash-#{LOGSTASH_VERSION}-flatjar.jar"
 
   def self.detect
-    log "Logstash"
+    if File.exists? "logstash.conf"
+      print "Logstash"
+    else
+      exit 1
+    end
   end
 
   def self.compile
@@ -25,6 +29,6 @@ module LogstashPack
   end
 
   def self.log(message)
-    puts "#{message}"
+    puts "-----> #{message}"
   end
 end
