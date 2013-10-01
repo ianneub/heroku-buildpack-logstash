@@ -8,7 +8,7 @@ module LogstashPack
   LOGSTASH_URL = "https://download.elasticsearch.org/logstash/logstash/logstash-#{LOGSTASH_VERSION}-flatjar.jar"
 
   def self.detect
-    if File.exists? "logstash.conf"
+    if File.exists? "#{OUTPUT_PATH}/logstash.conf"
       "Logstash"
     else
       raise Exception
