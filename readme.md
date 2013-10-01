@@ -6,6 +6,8 @@ This buildpack sets up a basic environment to run Logstash in.
 
 You will need a file in your root folder named `logstash.conf`. This file should contain your logstash configuration information.
 
+See an example `logstash.conf` in the [wiki](https://github.com/ianneub/heroku-buildpack-logstash/wiki).
+
 ## Usage
 
 To create a new Heroku app use the following commands:
