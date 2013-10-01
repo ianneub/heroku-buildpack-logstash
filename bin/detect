@@ -3,6 +3,4 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 require "logstash_pack"
 
-LogstashPack.detect
-
-exit 0
+puts LogstashPack.detect

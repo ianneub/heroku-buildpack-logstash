@@ -4,5 +4,3 @@ $:.unshift File.expand_path("../../lib", __FILE__)
 require "logstash_pack"
 
 LogstashPack.compile
-
-exit 0

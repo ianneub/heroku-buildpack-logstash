@@ -9,9 +9,9 @@ module LogstashPack
 
   def self.detect
     if File.exists? "logstash.conf"
-      print "Logstash"
+      "Logstash"
     else
-      exit 1
+      raise Exception
     end
   end
 
