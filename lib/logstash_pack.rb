@@ -1,6 +1,6 @@
 require 'yaml'
 
-module LanguagePack
+module LogstashPack
 
   LOGSTASH_VERSION = "1.2.1"
   LOGSTASH_URL = "https://download.elasticsearch.org/logstash/logstash/logstash-#{LOGSTASH_VERSION}-flatjar.jar"
@@ -23,6 +23,6 @@ module LanguagePack
   end
 
   def self.log(message)
-    puts "-----> #{message}"
+    puts "#{message}"
   end
 end

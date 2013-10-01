@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.expand_path("../../lib", __FILE__)
-require "language_pack"
+require "logstash_pack"
 
-LanguagePack.compile
+LogstashPack.compile
 
 exit 0
