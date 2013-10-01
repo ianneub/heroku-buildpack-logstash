@@ -4,7 +4,7 @@ This buildpack sets up a basic environment to run Logstash in.
 
 ## Requirements
 
-You will need a file your root folder named `logstash.conf`. This file should contain your logstash configuration information.
+You will need a file in your root folder named `logstash.conf`. This file should contain your logstash configuration information.
 
 ## Usage
 
