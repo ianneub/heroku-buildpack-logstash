@@ -15,6 +15,19 @@ To create a new Heroku app use the following commands:
 1. `heroku create --buildpack https://github.com/ianneub/heroku-buildpack-logstash.git`
 1. `git push heroku`
 
+## Settings
+
+You can configure the version of and/or the url to download Logstash from using a `config.json` file in your project root.
+
+```json
+{
+    "logstash": {
+        "version": "1.2.1",
+        "url": "https://download.elasticsearch.org/logstash/logstash/logstash-1.2.1-flatjar.jar"
+    }
+}
+```
+
 # License
 
 The MIT License (MIT)

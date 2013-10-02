@@ -1,11 +1,9 @@
 require 'yaml'
+require 'json'
 
 module LogstashPack
 
   OUTPUT_PATH = ARGV[0]
-
-  LOGSTASH_VERSION = "1.2.1"
-  LOGSTASH_URL = "https://download.elasticsearch.org/logstash/logstash/logstash-#{LOGSTASH_VERSION}-flatjar.jar"
 
   def self.detect
     if File.exists? "#{OUTPUT_PATH}/logstash.conf"
@@ -16,8 +14,18 @@ module LogstashPack
   end
 
   def self.compile
-    log "Downloading Logstash #{LOGSTASH_VERSION}..."
-    `curl #{LOGSTASH_URL} -L --silent -o #{OUTPUT_PATH}/logstash.jar`
+    # get variables from config.json if it exists
+    if File.exists? "#{OUTPUT_PATH}/config.json"
+      config = JSON.parse File.read "#{OUTPUT_PATH}/config.json"
+      logstash_version = config['logstash']['version'] if config['logstash']['version']
+      logstash_url = config['logstash']['url'] if config['logstash']['url']
+    end
+    
+    logstash_version ||= "1.2.1"
+    logstash_url ||= "https://download.elasticsearch.org/logstash/logstash/logstash-#{logstash_version}-flatjar.jar"
+
+    log "Downloading Logstash #{logstash_version} from #{logstash_url}..."
+    `curl #{logstash_url} -L --silent -o #{OUTPUT_PATH}/logstash.jar`
   end
 
   def self.release
