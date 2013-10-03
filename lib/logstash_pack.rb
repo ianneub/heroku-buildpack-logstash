@@ -14,29 +14,37 @@ module LogstashPack
   end
 
   def self.compile
-    # get variables from config.json if it exists
-    if File.exists? "#{OUTPUT_PATH}/config.json"
-      config = JSON.parse File.read "#{OUTPUT_PATH}/config.json"
-      logstash_version = config['logstash']['version'] if config['logstash']['version']
-      logstash_url = config['logstash']['url'] if config['logstash']['url']
-    end
-    
-    logstash_version ||= "1.2.1"
-    logstash_url ||= "https://download.elasticsearch.org/logstash/logstash/logstash-#{logstash_version}-flatjar.jar"
-
-    log "Downloading Logstash #{logstash_version} from #{logstash_url}..."
-    `curl #{logstash_url} -L --silent -o #{OUTPUT_PATH}/logstash.jar`
+    log "Downloading Logstash #{config[:version]} from #{config[:url]}..."
+    `curl #{config[:url]} -L --silent -o #{OUTPUT_PATH}/logstash.jar`
   end
 
   def self.release
+    debug = config[:debug] ? "-vvv" : ""
     {
       "default_process_types" => {
-        "worker" => "/usr/bin/java -server -Xms384M -Xmx384M -Djava.net.preferIPv4Stack=true -XX:+UseParallelOldGC -jar /app/logstash.jar agent -f /app/logstash.conf"
+        "worker" => "/usr/bin/java -server -Xms384M -Xmx384M -Djava.net.preferIPv4Stack=true -XX:+UseParallelOldGC -jar /app/logstash.jar agent -f /app/logstash.conf #{debug}"
       }
     }.to_yaml
   end
 
   def self.log(message)
     puts "-----> #{message}"
+  end
+
+  def self.config
+    output = {}
+    # get variables from config.json if it exists
+    if File.exists? "#{OUTPUT_PATH}/config.json"
+      config = JSON.parse File.read "#{OUTPUT_PATH}/config.json"
+      output[:version] = config['logstash']['version'] if config['logstash']['version']
+      output[:url] = config['logstash']['url'] if config['logstash']['url']
+      output[:debug] = config['logstash']['debug'] if config['logstash']['debug']
+    end
+
+    output[:version] ||= "1.2.1"
+    output[:url] ||= "https://download.elasticsearch.org/logstash/logstash/logstash-#{output[:version]}-flatjar.jar"
+    output[:debug] ||= false
+
+    output
   end
 end

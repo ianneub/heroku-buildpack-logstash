@@ -23,7 +23,8 @@ You can configure the version of and/or the url to download Logstash from using 
 {
     "logstash": {
         "version": "1.2.1",
-        "url": "https://download.elasticsearch.org/logstash/logstash/logstash-1.2.1-flatjar.jar"
+        "url": "https://download.elasticsearch.org/logstash/logstash/logstash-1.2.1-flatjar.jar",
+        "debug": true
     }
 }
 ```
