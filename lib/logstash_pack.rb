@@ -17,6 +17,9 @@ module LogstashPack
     if File.exists? "#{OUTPUT_PATH}/src/logstash-1.4.0.tar.gz"
       log "unzipping embedded logstash: #{OUTPUT_PATH}"
       `tar -xzf #{OUTPUT_PATH}/src/logstash-1.4.0.tar.gz -C #{OUTPUT_PATH}`
+      
+      log "patching in sincedb in s3 support"
+      `cp #{OUTPUT_PATH}/src/s3.rb #{OUTPUT_PATH}/logstash-1.4.0/lib/logstash/inputs/s3.rb`
       if File.exists? "#{OUTPUT_PATH}/logstash-1.4.0"
         log "unzip complete"
       else
