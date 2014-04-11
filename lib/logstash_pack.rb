@@ -14,15 +14,23 @@ module LogstashPack
   end
 
   def self.compile
-    log "Downloading Logstash #{config[:version]} from #{config[:url]}..."
-    `curl #{config[:url]} -L --silent -o #{OUTPUT_PATH}/logstash.jar`
+    if File.exists? "#{OUTPUT_PATH}/src/logstash-1.4.0.tar.gz"
+      log "unzipping embedded logstash: #{OUTPUT_PATH}"
+      `tar -xzf #{OUTPUT_PATH}/src/logstash-1.4.0.tar.gz -C #{OUTPUT_PATH}`
+      if File.exists? "#{OUTPUT_PATH}/logstash-1.4.0"
+        log "unzip complete"
+      else
+        raise Exception
+      end  
+    else
+      raise Exception
+    end
   end
 
   def self.release
-    debug = config[:debug] ? "-vvv" : ""
     {
       "default_process_types" => {
-        "worker" => "/usr/bin/java -server -Xms384M -Xmx384M -Djava.net.preferIPv4Stack=true -XX:+UseParallelOldGC -jar /app/logstash.jar agent -f /app/logstash.conf #{debug}"
+        "worker" => "./logstash-1.4.0/bin/logstash --verbose -f logstash.conf"
       }
     }.to_yaml
   end
@@ -33,18 +41,6 @@ module LogstashPack
 
   def self.config
     output = {}
-    # get variables from config.json if it exists
-    if File.exists? "#{OUTPUT_PATH}/config.json"
-      config = JSON.parse File.read "#{OUTPUT_PATH}/config.json"
-      output[:version] = config['logstash']['version'] if config['logstash']['version']
-      output[:url] = config['logstash']['url'] if config['logstash']['url']
-      output[:debug] = config['logstash']['debug'] if config['logstash']['debug']
-    end
-
-    output[:version] ||= "1.2.1"
-    output[:url] ||= "https://download.elasticsearch.org/logstash/logstash/logstash-#{output[:version]}-flatjar.jar"
-    output[:debug] ||= false
-
     output
   end
 end
