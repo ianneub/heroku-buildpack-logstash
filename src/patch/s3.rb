@@ -284,7 +284,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
     # File.open(@sincedb_path, 'w') { |file| file.write(since.to_s) }
 
     # write since time in s3
-    @logger.info("writing #{since.to_s} to s3 bucket")
+    @logger.info("updating #{since.to_s} to s3 bucket")
     since_obj = @s3bucket.objects['sincedb']
     since_obj.write(since.to_s)
 
