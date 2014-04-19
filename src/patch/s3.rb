@@ -181,7 +181,9 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
 
     objects = {}
     @s3bucket.objects.with_prefix(@prefix).each do |log|
+      @logger.debug("list_new: log.last_modified: #{log.last_modified}, since: #{since}")
       if log.last_modified > since
+        @logger.debug("processing: log.last_modified: #{log.last_modified}")
         objects[log.key] = log.last_modified
       end
     end

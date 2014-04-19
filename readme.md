@@ -11,6 +11,26 @@ This build pack includes a custom patched s3 input filter that uses s3 to store 
 stock s3 filter uses a local filesystem which is incompatible with heroku. A pull request has been
 submitted, but until then, we just unzip and then patch the standard s3 input filter.
 
+# Index Rebuilding
+
+There are times when you are going to want/need to rebuild one or more indicies. E.g., when enhancing
+the logstash configs, or when changing index properties, etc.
+
+The first step of doing this is understanding which set of raw S3 logs need to be re-indexed and what the datestamp
+is on the last log that is NOT to be part of the index.
+
+The logstash process uses the sincedb file in papertrail.steller.co/sincedb as the timestamp of the last file
+that it has processed. Set this file to a few minutes after the last file thats part of the last index to
+be preserved. E.g., if you are rebuilding indicies for 4/18 and beyond, look at the last file in the
+dt=2014-04-17 bucket and upload a new sincedb with that files modified time (+ a few minutes). This will ensure
+that this file is not processed and that the next one that is is also the beginning of a new index boundary. A
+typical sincedb will look like: "2014-04-17 20:07:00 -0700"
+
+* Stop the steller-logstash process with: heroku ps:scale worker=0 --app steller-logstash
+* go to found.no and delete indicies that need to be rebuilt
+* upload a new version of sincedeb into papertrail.steller.co/sincedb
+* Restart steller-logstash with: heroku ps:scale worker=1 --app steller-logstash
+
 # License
 
 The MIT License (MIT)

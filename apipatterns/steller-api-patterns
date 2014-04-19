@@ -10,6 +10,13 @@ AUTH_USER \[au: %{NUMBER:auth_user}\]
 AUTH_USER_AND_NAME \[au: %{NUMBER:auth_user},%{USERNAME:auth_user_name}\]
 USER_ID_AND_NAME \[uid: %{NUMBER:uid},%{USERNAME:user_name}\]
 COLLECTION_ID_AND_NAME \[cid: %{NUMBER:cid},%{COLLECTION_NAME:collection_name}\]
+RAW_USER_AGENT [\p{Alnum} ;.()/]*
+
+[ua: Steller/240 (iPhone; iOS 7.0; Scale/2.00)]
+STELLER (Steller|Curator|Player)
+STELLER_USER_AGENT \[ua: %{STELLER:steller_product_base}/%{NUMBER:steller_build}
+
+USER_AGENT \[ua: %{RAW_USER_AGENT:raw_ua}\]
 VERBS (GET|PUT|DELETE|POST)
 
 API_DATE %{YEAR}-%{MONTHNUM}-%{MONTHDAY}
