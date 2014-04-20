@@ -1,33 +1,35 @@
-# Heroku Buildpack for Logstash
+# Heroku Buildpack for Steller Logstash
 
-This buildpack sets up a basic environment to run Logstash in.
+This buildpack sets up a basic environment to run Logstash in. It is not a general purpose
+buildback in that it contains both the code, configuration, and patches to run logstash in
+the steller configuration.
 
-## Requirements
+The repo uses bad-form in that it carries the full tar.gz distribution of the logstash bits
+rather than downloading them on each push.
 
-You will need a file in your root folder named `logstash.conf`. This file should contain your logstash configuration information.
+This build pack includes a custom patched s3 input filter that uses s3 to store its sincedb. The
+stock s3 filter uses a local filesystem which is incompatible with heroku. A pull request has been
+submitted, but until then, we just unzip and then patch the standard s3 input filter.
 
-See an example `logstash.conf` in the [wiki](https://github.com/ianneub/heroku-buildpack-logstash/wiki).
+# Index Rebuilding
 
-## Usage
+There are times when you are going to want/need to rebuild one or more indicies. E.g., when enhancing
+the logstash configs, or when changing index properties, etc.
 
-To create a new Heroku app use the following commands:
+The first step of doing this is understanding which set of raw S3 logs need to be re-indexed and what the datestamp
+is on the last log that is NOT to be part of the index.
 
-1. `heroku create --buildpack https://github.com/ianneub/heroku-buildpack-logstash.git`
-1. `git push heroku`
+The logstash process uses the sincedb file in papertrail.steller.co/sincedb as the timestamp of the last file
+that it has processed. Set this file to a few minutes after the last file thats part of the last index to
+be preserved. E.g., if you are rebuilding indicies for 4/18 and beyond, look at the last file in the
+dt=2014-04-17 bucket and upload a new sincedb with that files modified time (+ a few minutes). This will ensure
+that this file is not processed and that the next one that is is also the beginning of a new index boundary. A
+typical sincedb will look like: "2014-04-17 20:07:00 -0700"
 
-## Settings
-
-You can configure the version of and/or the url to download Logstash from using a `config.json` file in your project root.
-
-```json
-{
-    "logstash": {
-        "version": "1.2.1",
-        "url": "https://download.elasticsearch.org/logstash/logstash/logstash-1.2.1-flatjar.jar",
-        "debug": true
-    }
-}
-```
+* Stop the steller-logstash process with: heroku ps:scale worker=0 --app steller-logstash
+* go to found.no and delete indicies that need to be rebuilt
+* upload a new version of sincedeb into papertrail.steller.co/sincedb
+* Restart steller-logstash with: heroku ps:scale worker=1 --app steller-logstash
 
 # License
 
